@@ -1,73 +1,99 @@
-# Welcome to your Lovable project
+# 💪 HealthCommit - Web3 Health Commitment dApp
 
-## Project info
+A decentralized application (dApp) that helps you stay accountable to your health goals using blockchain technology and smart contracts.
 
-**URL**: https://lovable.dev/projects/b51f72df-8860-41f4-aa80-760351d86d01
+## 🎯 Overview
 
-## How can I edit this code?
+HealthCommit allows users to commit to health goals by staking ETH. If you complete your goal within the deadline, you get your deposit back. If you fail, the funds automatically go to charity. Built on Ethereum with a beautiful, modern glassmorphism UI.
 
-There are several ways of editing your application.
+## ✨ Features
 
-**Use Lovable**
+- **🔒 Smart Contract Commitments**: Stake ETH on your health goals
+- **⏰ Live Countdown Timers**: Track time remaining for each goal
+- **💰 Automatic Refunds**: Get your deposit back when you complete goals
+- **🤝 Charity Support**: Failed goals automatically support charity
+- **🎨 Beautiful UI**: Modern glassmorphism design with smooth animations
+- **👛 Wallet Integration**: Connect via RainbowKit (MetaMask, WalletConnect, etc.)
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/b51f72df-8860-41f4-aa80-760351d86d01) and start prompting.
+## 🛠️ Tech Stack
 
-Changes made via Lovable will be committed automatically to this repo.
+- **Frontend**: React, TypeScript, TailwindCSS
+- **Blockchain**: Ethereum (Sepolia Testnet)
+- **Smart Contracts**: Solidity 0.8.19
+- **Web3**: Wagmi, Viem, RainbowKit
+- **Animations**: Framer Motion
+- **Build Tool**: Vite
 
-**Use your preferred IDE**
+## 🚀 Getting Started
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+### Prerequisites
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+- Node.js 18+
+- MetaMask or compatible Web3 wallet
+- Sepolia testnet ETH (get from [Sepolia Faucet](https://sepoliafaucet.com/))
 
-Follow these steps:
+### Installation
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+```bash
+# Clone the repository
+git clone <your-repo-url>
+cd health-commitment-dapp
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+# Install dependencies
+npm install
 
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
+# Start development server
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+### Configuration
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+1. **Deploy Smart Contract**: 
+   - Deploy `src/contracts/HealthCommitment.sol` to Sepolia testnet
+   - Update `CONTRACT_ADDRESS` in `src/config/web3.ts`
 
-**Use GitHub Codespaces**
+2. **WalletConnect Project ID**:
+   - Get a project ID from [WalletConnect Cloud](https://cloud.walletconnect.com/)
+   - Update `projectId` in `src/config/web3.ts`
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+3. **Charity Address** (optional):
+   - Update `CHARITY_ADDRESS` in `src/config/web3.ts` with your preferred charity wallet
 
-## What technologies are used for this project?
+## 📝 Smart Contract
 
-This project is built with:
+The `HealthCommitment` contract includes:
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+- `commitGoal()`: Create a new health goal with ETH deposit
+- `markCompleted()`: Mark your goal as completed
+- `claimRefund()`: Claim your deposit back for completed goals
+- `failGoal()`: Acknowledge failure and send funds to charity
 
-## How can I deploy this project?
+### Contract Events
 
-Simply open [Lovable](https://lovable.dev/projects/b51f72df-8860-41f4-aa80-760351d86d01) and click on Share -> Publish.
+- `GoalCommitted`: Emitted when a new goal is created
+- `GoalCompleted`: Emitted when a goal is marked complete
+- `RefundClaimed`: Emitted when user claims their refund
+- `GoalFailed`: Emitted when goal fails and funds go to charity
 
-## Can I connect a custom domain to my Lovable project?
+## 🎨 Design System
 
-Yes, you can!
+The app uses a custom design system with:
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+- **Dark theme** with glassmorphism effects
+- **Purple-blue gradient** for primary actions
+- **Green accents** for success states
+- **Orange accents** for warnings
+- **Smooth animations** using Framer Motion
+- **Responsive layout** for all devices
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+## 📄 License
+
+MIT License
+
+## 🤝 Contributing
+
+Contributions are welcome! Feel free to open issues or submit pull requests.
+
+## ⚠️ Disclaimer
+
+This is a demo application built for educational purposes. Always audit smart contracts before using them with real funds on mainnet.
