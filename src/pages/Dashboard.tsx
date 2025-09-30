@@ -75,7 +75,7 @@ export default function Dashboard() {
     },
   } as any);
 
-  // Process and filter active goals
+  // Process and filter active goals (show all except refunded/failed)
   useEffect(() => {
     if (!goalsData || !userGoalIds) {
       setActiveGoals([]);
@@ -89,8 +89,8 @@ export default function Dashboard() {
         const goalData = result.result as any;
         const goalId = Number((userGoalIds as bigint[])[index]);
         
-        // Only show active goals (not completed, refunded, or failed)
-        if (!goalData.completed && !goalData.refunded && !goalData.failed) {
+        // Show all goals except those that are refunded or failed (keep completed ones visible)
+        if (!goalData.refunded && !goalData.failed) {
           processedGoals.push({
             id: goalId,
             user: goalData.user,
@@ -115,12 +115,24 @@ export default function Dashboard() {
       return;
     }
 
+    const durationNum = Number(duration);
+    if (durationNum <= 0 || !Number.isInteger(durationNum)) {
+      toast.error('Duration must be a positive whole number');
+      return;
+    }
+
+    const depositNum = Number(deposit);
+    if (depositNum <= 0) {
+      toast.error('Deposit amount must be greater than 0');
+      return;
+    }
+
     try {
       writeContract({
         address: CONTRACT_ADDRESS as `0x${string}`,
         abi: CONTRACT_ABI,
         functionName: 'commitGoal',
-        args: [description, BigInt(duration)],
+        args: [description, BigInt(durationNum)],
         value: parseEther(deposit),
       } as any);
       toast.info('Transaction submitted...');
@@ -223,6 +235,8 @@ export default function Dashboard() {
                   <Input
                     id="duration"
                     type="number"
+                    min="1"
+                    step="1"
                     placeholder="10"
                     value={duration}
                     onChange={(e) => setDuration(e.target.value)}
@@ -235,6 +249,7 @@ export default function Dashboard() {
                   <Input
                     id="deposit"
                     type="number"
+                    min="0.001"
                     step="0.01"
                     placeholder="0.1"
                     value={deposit}
