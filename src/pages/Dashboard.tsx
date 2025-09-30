@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
-import { useAccount, useReadContract, useWriteContract, useWaitForTransactionReceipt } from 'wagmi';
+import { useAccount, useReadContract, useReadContracts, useWriteContract, useWaitForTransactionReceipt } from 'wagmi';
 import { parseEther } from 'viem';
 import { Heart, Plus, History } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -59,21 +59,55 @@ export default function Dashboard() {
     }
   }, [isSuccess, refetchGoalIds]);
 
-  // Fetch individual goal details
+  // Prepare contract calls for each goal
+  const goalContracts = ((userGoalIds as bigint[]) || []).map((goalId) => ({
+    address: CONTRACT_ADDRESS as `0x${string}`,
+    abi: CONTRACT_ABI,
+    functionName: 'getGoal' as const,
+    args: [goalId] as const,
+  })) as any;
+
+  // Fetch all goal details
+  const { data: goalsData, refetch: refetchGoals } = useReadContracts({
+    contracts: goalContracts,
+    query: {
+      enabled: !!userGoalIds && Array.isArray(userGoalIds) && userGoalIds.length > 0,
+    },
+  } as any);
+
+  // Process and filter active goals
   useEffect(() => {
-    const fetchGoals = async () => {
-      if (!userGoalIds || !Array.isArray(userGoalIds)) return;
+    if (!goalsData || !userGoalIds) {
+      setActiveGoals([]);
+      return;
+    }
 
-      const goals: (Goal & { id: number })[] = [];
-      for (const goalId of userGoalIds) {
-        // Would need to fetch each goal individually here
-        // For now, we'll show a simplified version
+    const processedGoals: (Goal & { id: number })[] = [];
+    
+    (goalsData as any[]).forEach((result, index) => {
+      if (result.status === 'success' && result.result) {
+        const goalData = result.result as any;
+        const goalId = Number((userGoalIds as bigint[])[index]);
+        
+        // Only show active goals (not completed, refunded, or failed)
+        if (!goalData.completed && !goalData.refunded && !goalData.failed) {
+          processedGoals.push({
+            id: goalId,
+            user: goalData.user,
+            description: goalData.description,
+            depositAmount: goalData.depositAmount,
+            startTime: goalData.startTime,
+            durationInDays: goalData.durationInDays,
+            completed: goalData.completed,
+            refunded: goalData.refunded,
+            failed: goalData.failed,
+          });
+        }
       }
-      setActiveGoals(goals);
-    };
+    });
 
-    fetchGoals();
-  }, [userGoalIds]);
+    setActiveGoals(processedGoals);
+  }, [goalsData, userGoalIds]);
 
   const handleCommitGoal = () => {
     if (!description || !duration || !deposit) {
